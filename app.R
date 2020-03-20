@@ -48,34 +48,47 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                         ),
                         plotlyOutput("plot1")
                     ),
-                    tabPanel("Table",
-                             mainPanel(
-                                 h4("Table"),
-                                 selectInput("inputdate", "Choose a Date:",
-                                             choices = dates),
-                                 DT::dataTableOutput("df_jour")
-                             )),
+                    tabPanel(
+                        "Table",
+                        fluidRow(column(
+                            6,
+                            h4("Table"),
+                            selectInput("inputdate", "Choose a Date:",
+                                        choices = dates)
+                        ),
+                        column(6,
+                               uiOutput("countryPicker2"))),
+                        fluidRow(
+                            column(6,
+                                   DT::dataTableOutput("df_jour")),
+                            column(6,
+                                   DT::dataTableOutput("df_pays"))
+                        )
+                    ),
                     tabPanel(
                         "Map",
-                        fluidRow(
-                            column(2,
-                                   radioButtons(
-                            "mapType",
-                            label = h4("Graph type"),
-                            choices = list(
-                                "Active Cases" = 'Active.Cases',
-                                "Deaths" = 'Deaths',
-                                "Recovered" = 'Recovered',
-                                "Confirmed" = "Confirmed"
-                            ),
-                            selected = 'Active.Cases'
-                        )),
-                        column(2,
-                               selectInput("mapinputdate", "Choose a Date:",
-                                    choices = dates)
-                               )
+                        fluidRow(column(
+                            2,
+                            radioButtons(
+                                "mapType",
+                                label = h4("Graph type"),
+                                choices = list(
+                                    "Active Cases" = 'Active.Cases',
+                                    "Deaths" = 'Deaths',
+                                    "Recovered" = 'Recovered',
+                                    "Confirmed" = "Confirmed"
+                                ),
+                                selected = 'Active.Cases'
+                            )
                         ),
-                        mainPanel(leafletOutput("plotmap", width=1200, height=600), p())
+                        column(
+                            2,
+                            selectInput("mapinputdate", "Choose a Date:",
+                                        choices = dates)
+                        )),
+                        mainPanel(leafletOutput(
+                            "plotmap", width = 1200, height = 600
+                        ), p())
                     )
                 ))
 
@@ -85,46 +98,60 @@ server <- function(input, output) {
     output$plot1 <- renderPlotly({
         plot1()
     })
-    output$plot2 <- renderPlotly({
-        plot2()
-    })
     output$df_jour <- DT::renderDataTable({
-        df_jour_reactive()
+        DT::datatable(df_jour_reactive(), options = list(pageLength = 15))
+    })
+    output$df_pays <- DT::renderDataTable({
+        DT::datatable(df_pays_reactive(), options = list(pageLength = 15))
     })
     output$plotmap <- renderLeaflet({
         plotmap()
     })
 
-        output$countryPicker <- renderUI({
-            pickerInput(
-                inputId = "countries",
-                label = "Select one or more",
-                choices = countries,
-                options = list(
-                    `actions-box` = TRUE,
-                    `live-search` = TRUE,
-                    size = 20
-                ),
-                multiple = TRUE,
-                selected = most_active_countries(15)
-            )
-        })
+    output$countryPicker <- renderUI({
+        pickerInput(
+            inputId = "countries",
+            label = "Select one or more",
+            choices = countries,
+            options = list(
+                `actions-box` = TRUE,
+                `live-search` = TRUE,
+                size = 20
+            ),
+            multiple = TRUE,
+            selected = most_affected_countries(15)
+        )
+    })
+    output$countryPicker2 <- renderUI({
+        pickerInput(
+            inputId = "countries2",
+            label = "Select one or more",
+            choices = countries,
+            options = list(
+                `actions-box` = TRUE,
+                `live-search` = TRUE,
+                size = 20
+            ),
+            multiple = TRUE,
+            selected = most_affected_countries(1)
+        )
+    })
 
-        output$dateInput <- renderUI({
-            dateRangeInput(
-                'dateRange',
-                label = 'Choose a time range',
-                start = Sys.Date() - weeks(4),
-                end = Sys.Date(),
-                min = "2020-01-01",
-                max = Sys.Date(),
-                format = "dd/mm/yyyy",
-                startview = 'week',
-                language = 'fr',
-                weekstart = 1
-            )
-        })
-    }
+    output$dateInput <- renderUI({
+        dateRangeInput(
+            'dateRange',
+            label = 'Choose a time range',
+            start = Sys.Date() - weeks(4),
+            end = Sys.Date(),
+            min = "2020-01-01",
+            max = Sys.Date(),
+            format = "dd/mm/yyyy",
+            startview = 'week',
+            language = 'fr',
+            weekstart = 1
+        )
+    })
+}
 
-    # Run the application
-    shinyApp(ui = ui, server = server)
+# Run the application
+shinyApp(ui = ui, server = server)

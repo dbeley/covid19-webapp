@@ -1,4 +1,4 @@
-most_active_countries <- function(n) {
+most_affected_countries <- function(n) {
   df %>%
     filter(Date == max(Date)) %>%
     arrange(desc(Active.Cases)) %>%
@@ -32,7 +32,20 @@ df_jour_reactive <- reactive({
     ) %>%
     select(Country.Region, Confirmed, Deaths, Recovered) %>%
     arrange(desc(Deaths))
+})
 
+df_pays_reactive <- reactive({
+  df %>%
+    filter(Country.Region == !!input$countries2) %>%
+    group_by(Country.Region, Date) %>%
+    summarize(
+      Confirmed = sum(Confirmed),
+      Deaths = sum(Deaths),
+      Recovered = sum(Recovered),
+      Active.Cases = sum(Active.Cases)
+    ) %>%
+    select(Country.Region, Date, Confirmed, Deaths, Recovered) %>%
+    arrange(desc(Date))
 })
 
 plot1 <- reactive({
@@ -58,12 +71,6 @@ plot1 <- reactive({
   }
 })
 
-plot2 <- reactive({
-  df %>%
-    ggplot(aes(Date, Confirmed)) +
-    geom_point()
-})
-
 df_map_reactive <- reactive({
   df %>%
     group_by(Country.Region, Date, Lat, Long) %>%
@@ -79,28 +86,56 @@ df_map_reactive <- reactive({
 
 plotmap <- reactive({
   if (input$mapType == "Confirmed") {
-  leaflet() %>%
-  addTiles() %>%
-  setView(2.2, 48, 2) %>%
-  addCircles(data=df_map_reactive(), lat=~Lat, lng=~Long, weight=1, radius=~sqrt(Confirmed)*5000, popup=~paste(Country.Region, ":", Confirmed, " confirmed."))
+    leaflet() %>%
+      addTiles() %>%
+      setView(2.2, 48, 2) %>%
+      addCircles(
+        data = df_map_reactive(),
+        lat =  ~ Lat,
+        lng =  ~ Long,
+        weight = 1,
+        radius =  ~ sqrt(Confirmed) * 5000,
+        popup =  ~ paste(Country.Region, ":", Confirmed, " confirmed.")
+      )
   }
   else if (input$mapType == "Deaths") {
-  leaflet() %>%
-  addTiles() %>%
-  setView(2.2, 48, 2) %>%
-  addCircles(data=df_map_reactive(), lat=~Lat, lng=~Long, weight=1, radius=~sqrt(Deaths)*5000, popup=~paste(Country.Region, ":", Deaths, " deaths."))
+    leaflet() %>%
+      addTiles() %>%
+      setView(2.2, 48, 2) %>%
+      addCircles(
+        data = df_map_reactive(),
+        lat =  ~ Lat,
+        lng =  ~ Long,
+        weight = 1,
+        radius =  ~ sqrt(Deaths) * 5000,
+        popup =  ~ paste(Country.Region, ":", Deaths, " deaths.")
+      )
   }
   else if (input$mapType == "Recovered") {
-  leaflet() %>%
-  addTiles() %>%
-  setView(2.2, 48, 2) %>%
-  addCircles(data=df_map_reactive(), lat=~Lat, lng=~Long, weight=1, radius=~sqrt(Recovered)*5000, popup=~paste(Country.Region, ":", Recovered, " recovered."))
+    leaflet() %>%
+      addTiles() %>%
+      setView(2.2, 48, 2) %>%
+      addCircles(
+        data = df_map_reactive(),
+        lat =  ~ Lat,
+        lng =  ~ Long,
+        weight = 1,
+        radius =  ~ sqrt(Recovered) * 5000,
+        popup =  ~ paste(Country.Region, ":", Recovered, " recovered.")
+      )
   }
   else if (input$mapType == "Active.Cases") {
-  leaflet() %>%
-  addTiles() %>%
-  setView(2.2, 48, 2) %>%
-  addCircles(data=df_map_reactive(), lat=~Lat, lng=~Long, weight=1, radius=~sqrt(Active.Cases)*5000, popup=~paste(Country.Region, ":", Active.Cases, " active cases."))
+    leaflet() %>%
+      addTiles() %>%
+      setView(2.2, 48, 2) %>%
+      addCircles(
+        data = df_map_reactive(),
+        lat =  ~ Lat,
+        lng =  ~ Long,
+        weight = 1,
+        radius =  ~ sqrt(Active.Cases) * 5000,
+        popup =  ~ paste(Country.Region, ":", Active.Cases, " active cases.")
+      )
   }
 })
 
@@ -117,4 +152,11 @@ df_date <- df %>%
 leaflet() %>%
   addTiles() %>%
   setView(2.2, 48, 2) %>%
-  addCircles(data=df_date, lat=~Lat, lng=~Long, weight=1, radius=~sqrt(Confirmed)*5000, popup=~Confirmed)
+  addCircles(
+    data = df_date,
+    lat =  ~ Lat,
+    lng =  ~ Long,
+    weight = 1,
+    radius =  ~ sqrt(Confirmed) * 5000,
+    popup =  ~ Confirmed
+  )
