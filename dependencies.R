@@ -38,7 +38,8 @@ usePackage("plotly")
 usePackage("rworldmap")
 usePackage("leaflet")
 usePackage("htmltools")
+usePackage("shinydashboard")
 
 # Options globales ----
-theme_set(theme_minimal() + theme(text = element_text(size = 20)))
+theme_set(theme_minimal() + theme(text = element_text(size = 16)))
 #theme_set(theme_void())

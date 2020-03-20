@@ -49,23 +49,29 @@ df_pays_reactive <- reactive({
 })
 
 plot1 <- reactive({
+  d <- df_reactive()
+  if (nrow(d) == 0)
+    return(NULL)
   if (input$plotType == "Active.Cases") {
     ggplotly(
-      ggplot(
-        df_reactive(),
-        aes(Date, Active.Cases, color = Country.Region)
-      ) +
-        geom_point() + geom_line() + labs(y = "Active Cases"),
+      ggplot(d,
+             aes(Date, Active.Cases, color = Country.Region)) +
+        geom_point() + geom_line() + labs(y = "Active Cases", color = "Country"),
       height = 600
     )
   }
   else if (input$plotType == "Deaths") {
-    ggplotly(ggplot(df_reactive(), aes(Date, Deaths, color = Country.Region)) +
+    ggplotly(ggplot(d, aes(Date, Deaths, color = Country.Region)) +
                geom_point() + geom_line(),
              height = 600)
   }
   else if (input$plotType == "Recovered") {
-    ggplotly(ggplot(df_reactive(), aes(Date, Recovered, color = Country.Region)) +
+    ggplotly(ggplot(d, aes(Date, Recovered, color = Country.Region)) +
+               geom_point() + geom_line(),
+             height = 600)
+  }
+  else if (input$plotType == "Confirmed") {
+    ggplotly(ggplot(d, aes(Date, Confirmed, color = Country.Region)) +
                geom_point() + geom_line(),
              height = 600)
   }
@@ -85,12 +91,28 @@ df_map_reactive <- reactive({
 })
 
 plotmap <- reactive({
+  d <- df_map_reactive()
+  leaflet() %>%
+    addTiles() %>%
+    setView(2.2, 48, 2) %>%
+    addCircles(
+      data = d,
+      lat =  ~ Lat,
+      lng =  ~ Long,
+      weight = 1,
+      radius =  ~ sqrt(Active.Cases) * 5000,
+      popup =  ~ paste(Country.Region, ":", Active.Cases, " active cases.")
+    )
+})
+
+observe({
+  proxy <- leafletProxy("plotmap")
+  d <- df_map_reactive()
   if (input$mapType == "Confirmed") {
-    leaflet() %>%
-      addTiles() %>%
-      setView(2.2, 48, 2) %>%
+    proxy %>%
+      clearShapes() %>%
       addCircles(
-        data = df_map_reactive(),
+        data = d,
         lat =  ~ Lat,
         lng =  ~ Long,
         weight = 1,
@@ -99,11 +121,10 @@ plotmap <- reactive({
       )
   }
   else if (input$mapType == "Deaths") {
-    leaflet() %>%
-      addTiles() %>%
-      setView(2.2, 48, 2) %>%
+    proxy %>%
+      clearShapes() %>%
       addCircles(
-        data = df_map_reactive(),
+        data = d,
         lat =  ~ Lat,
         lng =  ~ Long,
         weight = 1,
@@ -112,11 +133,10 @@ plotmap <- reactive({
       )
   }
   else if (input$mapType == "Recovered") {
-    leaflet() %>%
-      addTiles() %>%
-      setView(2.2, 48, 2) %>%
+    proxy %>%
+      clearShapes() %>%
       addCircles(
-        data = df_map_reactive(),
+        data = d,
         lat =  ~ Lat,
         lng =  ~ Long,
         weight = 1,
@@ -125,11 +145,10 @@ plotmap <- reactive({
       )
   }
   else if (input$mapType == "Active.Cases") {
-    leaflet() %>%
-      addTiles() %>%
-      setView(2.2, 48, 2) %>%
+    proxy %>%
+      clearShapes() %>%
       addCircles(
-        data = df_map_reactive(),
+        data = d,
         lat =  ~ Lat,
         lng =  ~ Long,
         weight = 1,
@@ -139,24 +158,24 @@ plotmap <- reactive({
   }
 })
 
-df_date <- df %>%
-  group_by(Country.Region, Date, Lat, Long) %>%
-  summarize(
-    Confirmed = sum(Confirmed),
-    Deaths = sum(Deaths),
-    Recovered = sum(Recovered),
-    Active.Cases = sum(Active.Cases)
-  ) %>%
-  filter(Date == max(df$Date))
-
-leaflet() %>%
-  addTiles() %>%
-  setView(2.2, 48, 2) %>%
-  addCircles(
-    data = df_date,
-    lat =  ~ Lat,
-    lng =  ~ Long,
-    weight = 1,
-    radius =  ~ sqrt(Confirmed) * 5000,
-    popup =  ~ Confirmed
-  )
+# df_date <- df %>%
+#   group_by(Country.Region, Date, Lat, Long) %>%
+#   summarize(
+#     Confirmed = sum(Confirmed),
+#     Deaths = sum(Deaths),
+#     Recovered = sum(Recovered),
+#     Active.Cases = sum(Active.Cases)
+#   ) %>%
+#   filter(Date == max(df$Date))
+#
+# leaflet() %>%
+#   addTiles() %>%
+#   setView(2.2, 48, 2) %>%
+#   addCircles(
+#     data = df_date,
+#     lat =  ~ Lat,
+#     lng =  ~ Long,
+#     weight = 1,
+#     radius =  ~ sqrt(Confirmed) * 5000,
+#     popup =  ~ Confirmed
+#   )

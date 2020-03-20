@@ -27,9 +27,9 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                                 3,
                                 # offset = '0.2',
                                 # align = 'center',
-                                radioButtons(
+                                selectInput(
                                     "plotType",
-                                    label = h4("Graph type"),
+                                    label = "Graph type",
                                     choices = list(
                                         "Active Cases" = 'Active.Cases',
                                         "Deaths" = 'Deaths',
@@ -40,11 +40,9 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                                 )
                             ),
                             column(3,
-                                   h4("Countries"),
-                                   uiOutput("countryPicker")),
+                                   uiOutput("dateInput")),
                             column(3,
-                                   h4("Date"),
-                                   uiOutput("dateInput"))
+                                   uiOutput("countryPicker"))
                         ),
                         plotlyOutput("plot1")
                     ),
@@ -52,8 +50,7 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                         "Table",
                         fluidRow(column(
                             6,
-                            h4("Table"),
-                            selectInput("inputdate", "Choose a Date:",
+                            selectInput("inputdate", "Choose a date:",
                                         choices = dates)
                         ),
                         column(6,
@@ -65,31 +62,39 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                                    DT::dataTableOutput("df_pays"))
                         )
                     ),
-                    tabPanel(
-                        "Map",
-                        fluidRow(column(
-                            2,
-                            radioButtons(
-                                "mapType",
-                                label = h4("Graph type"),
-                                choices = list(
-                                    "Active Cases" = 'Active.Cases',
-                                    "Deaths" = 'Deaths',
-                                    "Recovered" = 'Recovered',
-                                    "Confirmed" = "Confirmed"
-                                ),
-                                selected = 'Active.Cases'
-                            )
-                        ),
-                        column(
-                            2,
-                            selectInput("mapinputdate", "Choose a Date:",
-                                        choices = dates)
-                        )),
-                        mainPanel(leafletOutput(
-                            "plotmap", width = 1200, height = 600
-                        ), p())
-                    )
+                    tabPanel("Map",
+                             fluidRow(
+                                 column(
+                                     2,
+                                     selectInput(
+                                         "mapType",
+                                         label = "Graph type",
+                                         choices = list(
+                                             "Active Cases" = 'Active.Cases',
+                                             "Deaths" = 'Deaths',
+                                             "Recovered" = 'Recovered',
+                                             "Confirmed" = "Confirmed"
+                                         ),
+                                         selected = 'Active.Cases'
+                                     )
+                                 ),
+                                 column(
+                                     2,
+                                     sliderInput(
+                                         "mapinputdate",
+                                         label = "Date",
+                                         min = min(dates),
+                                         max = max(dates),
+                                         value = max(dates),
+                                         animate = TRUE
+                                     )
+                                     # selectInput("mapinputdate", label="Choose a date",
+                                     #             choices = dates)
+                                 )
+                             ),
+                             mainPanel(
+                                 leafletOutput("plotmap", width = 1200, height = 600)
+                             ))
                 ))
 
 # Define server logic required to draw a histogram
@@ -111,7 +116,7 @@ server <- function(input, output) {
     output$countryPicker <- renderUI({
         pickerInput(
             inputId = "countries",
-            label = "Select one or more",
+            label = "Select countries",
             choices = countries,
             options = list(
                 `actions-box` = TRUE,
@@ -125,7 +130,7 @@ server <- function(input, output) {
     output$countryPicker2 <- renderUI({
         pickerInput(
             inputId = "countries2",
-            label = "Select one or more",
+            label = "Select countries",
             choices = countries,
             options = list(
                 `actions-box` = TRUE,
