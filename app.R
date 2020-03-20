@@ -63,37 +63,37 @@ ui <- fluidPage(theme = shinytheme("flatly"),
                         )
                     ),
                     tabPanel("Map",
-                             fluidRow(
-                                 column(
-                                     2,
-                                     selectInput(
-                                         "mapType",
-                                         label = "Graph type",
-                                         choices = list(
-                                             "Active Cases" = 'Active.Cases',
-                                             "Deaths" = 'Deaths',
-                                             "Recovered" = 'Recovered',
-                                             "Confirmed" = "Confirmed"
+                             div(
+                                 class = "outer",
+                                 leafletOutput("plotmap", height = "75vh"),
+                                 absolutePanel(
+                                     top = 40,
+                                     right = 10,
+                                     width = 300,
+                                     draggable = TRUE,
+                                     style = " opacity: 0.95",
+                                     wellPanel(
+                                         selectInput(
+                                             "mapType",
+                                             label = "Graph type",
+                                             choices = list(
+                                                 "Active Cases" = 'Active.Cases',
+                                                 "Deaths" = 'Deaths',
+                                                 "Recovered" = 'Recovered',
+                                                 "Confirmed" = "Confirmed"
+                                             ),
+                                             selected = 'Active.Cases'
                                          ),
-                                         selected = 'Active.Cases'
+                                         sliderInput(
+                                             "mapinputdate",
+                                             label = "Date",
+                                             min = min(dates),
+                                             max = max(dates),
+                                             value = max(dates),
+                                             animate = TRUE
+                                         )
                                      )
-                                 ),
-                                 column(
-                                     2,
-                                     sliderInput(
-                                         "mapinputdate",
-                                         label = "Date",
-                                         min = min(dates),
-                                         max = max(dates),
-                                         value = max(dates),
-                                         animate = TRUE
-                                     )
-                                     # selectInput("mapinputdate", label="Choose a date",
-                                     #             choices = dates)
                                  )
-                             ),
-                             mainPanel(
-                                 leafletOutput("plotmap", width = 1200, height = 600)
                              ))
                 ))
 

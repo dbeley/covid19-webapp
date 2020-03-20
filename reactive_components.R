@@ -91,17 +91,23 @@ df_map_reactive <- reactive({
 })
 
 plotmap <- reactive({
-  d <- df_map_reactive()
+  d <- df %>%
+    filter(Date == max(Date)) %>%
+    group_by(Country.Region, Date, Lat, Long) %>%
+    summarize(Active.Cases = sum(Active.Cases))
+  pal <- colorNumeric(palette="YlOrRd", domain=d$Active.Cases)
   leaflet() %>%
     addTiles() %>%
-    setView(2.2, 48, 2) %>%
+    setView(2.2, 48, 3) %>%
     addCircles(
       data = d,
       lat =  ~ Lat,
       lng =  ~ Long,
       weight = 1,
       radius =  ~ sqrt(Active.Cases) * 5000,
-      popup =  ~ paste(Country.Region, ":", Active.Cases, " active cases.")
+      popup =  ~ paste(Country.Region, ":", Active.Cases, " active cases."),
+      fillOpacity = 0.7,
+      color= ~pal(Active.Cases)
     )
 })
 
@@ -109,6 +115,7 @@ observe({
   proxy <- leafletProxy("plotmap")
   d <- df_map_reactive()
   if (input$mapType == "Confirmed") {
+    pal <- colorNumeric(palette="YlOrRd", domain=d$Confirmed)
     proxy %>%
       clearShapes() %>%
       addCircles(
@@ -117,10 +124,13 @@ observe({
         lng =  ~ Long,
         weight = 1,
         radius =  ~ sqrt(Confirmed) * 5000,
-        popup =  ~ paste(Country.Region, ":", Confirmed, " confirmed.")
+        popup =  ~ paste(Country.Region, ":", Confirmed, " confirmed."),
+      fillOpacity = 0.7,
+        color= ~pal(Confirmed)
       )
   }
   else if (input$mapType == "Deaths") {
+    pal <- colorNumeric(palette="YlOrRd", domain=d$Deaths)
     proxy %>%
       clearShapes() %>%
       addCircles(
@@ -129,10 +139,13 @@ observe({
         lng =  ~ Long,
         weight = 1,
         radius =  ~ sqrt(Deaths) * 5000,
-        popup =  ~ paste(Country.Region, ":", Deaths, " deaths.")
+        popup =  ~ paste(Country.Region, ":", Deaths, " deaths."),
+      fillOpacity = 0.7,
+        color= ~pal(Deaths)
       )
   }
   else if (input$mapType == "Recovered") {
+    pal <- colorNumeric(palette="YlGn", domain=d$Recovered)
     proxy %>%
       clearShapes() %>%
       addCircles(
@@ -141,10 +154,13 @@ observe({
         lng =  ~ Long,
         weight = 1,
         radius =  ~ sqrt(Recovered) * 5000,
-        popup =  ~ paste(Country.Region, ":", Recovered, " recovered.")
+        popup =  ~ paste(Country.Region, ":", Recovered, " recovered."),
+      fillOpacity = 0.7,
+        color= ~pal(Recovered)
       )
   }
   else if (input$mapType == "Active.Cases") {
+    pal <- colorNumeric(palette="YlOrRd", domain=d$Active.Cases)
     proxy %>%
       clearShapes() %>%
       addCircles(
@@ -153,7 +169,9 @@ observe({
         lng =  ~ Long,
         weight = 1,
         radius =  ~ sqrt(Active.Cases) * 5000,
-        popup =  ~ paste(Country.Region, ":", Active.Cases, " active cases.")
+        popup =  ~ paste(Country.Region, ":", Active.Cases, " active cases."),
+      fillOpacity = 0.7,
+        color= ~pal(Active.Cases)
       )
   }
 })
