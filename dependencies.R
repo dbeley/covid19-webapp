@@ -27,26 +27,16 @@ if (.Platform$OS.type == "windows") {
 }
 
 # Chargement des librairies ----
-usePackage("readxl")
 usePackage("tidyverse")
 usePackage("devtools")
 usePackage("lubridate")
 usePackage("dplyr")
-# dépendances supplémentaires : udunits + gdal
-usePackage("gganimate")
-# usePackageGithub("gganimate", "thomasp85")
-usePackageGithub("patchwork", "thomasp85")
 usePackage("viridis")
 usePackage("scales")
 usePackage("RCurl")
 usePackage("plotly")
-
 usePackage("rworldmap")
-# usePackage("ggmap")
 usePackage("leaflet")
-# usePackage("rnaturalearth")
-# usePackage("rnaturalearthdata")
-# usePackage("sf")
 usePackage("htmltools")
 
 # Options globales ----
