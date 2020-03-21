@@ -22,8 +22,9 @@
 In rstudio, run the following code :
 
 ```
-options(Ncpus=4)
-install.packages('shiny')
+# uncomment if shiny is not yet installed
+# options(Ncpus=4)
+# install.packages('shiny')
 library('shiny')
-runGitHub('covid-19-webapp', 'dbeley')
+runGitHub('covid19-webapp', 'dbeley')
 ```

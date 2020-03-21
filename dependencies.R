@@ -10,22 +10,6 @@ usePackageGithub <- function(p, auteur) {
   require(p, character.only = TRUE)
 }
 
-set_wd <- function() {
-  usePackage("rstudioapi") # make sure you have it installed
-  current_path <- getActiveDocumentContext()$path
-  setwd(dirname(current_path))
-  print(getwd())
-}
-
-if (.Platform$OS.type == "unix")
-  set_wd()
-if (.Platform$OS.type == "windows") {
-  set_wd()
-  usePackage("installr")
-  updater()
-  Sys.getenv("R_ZIPCMD", "zip")
-}
-
 # Chargement des librairies ----
 usePackage("tidyverse")
 usePackage("devtools")
