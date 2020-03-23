@@ -59,14 +59,24 @@ df <- df_c %>% inner_join(df_d) %>% inner_join(df_r)
 df <- df %>%
   mutate(
     Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"),
-    Active.Cases = Confirmed - (Deaths + Recovered)
+    Active.Cases = Confirmed - (Deaths + Recovered),
+    Country.Formatted =
+           ifelse(
+             Province.State == "",
+             Country.Region,
+             ifelse(
+               Province.State == Country.Region,
+               Country.Region,
+               paste(Country.Region, " (", Province.State, ")", sep="")
+             )
+           )
   ) %>%
   arrange(desc(Date))
 
 rm(df_c, df_d, df_r)
 
 df_a <- df %>%
-  group_by(Country.Region, Date) %>%
+  group_by(Country.Formatted, Country.Region, Date) %>%
   summarize(Active.Cases = sum(Active.Cases)) %>%
   arrange(desc(Active.Cases)) %>%
   ungroup()
@@ -80,3 +90,28 @@ countries <- unique(
 )
 
 dates <- unique(df$Date)
+
+df100 <- df %>%
+  group_by(Country.Region, Date) %>%
+  summarize(Confirmed = sum(Confirmed)) %>%
+  filter(Confirmed > 100) %>%
+  group_by(Country.Region) %>%
+  summarize(jour100 = Date[which.min(Confirmed > 100)]) %>%
+  inner_join(df) %>%
+  filter(Date > jour100) %>%
+  arrange(Date) %>%
+  group_by(Country.Region, Date) %>%
+  summarize(Confirmed = sum(Confirmed),
+            Deaths = sum(Deaths)) %>%
+  group_by(Country.Region) %>%
+  mutate(Day = row_number())
+
+df100 %>%
+  ggplot(aes(Day, Deaths, color=Country.Region)) + geom_point() + geom_line() +
+  guides(color=FALSE)
+
+countries100 <- unique(
+  df100 %>%
+    arrange(desc(Deaths)) %>%
+    pull(Country.Region)
+)
