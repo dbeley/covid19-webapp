@@ -20,19 +20,41 @@ df_reactive <- reactive({
     )
 })
 
-most_affected_countries100 <- function(n) {
-  df100 %>%
-    group_by(Country.Region) %>%
-    top_n(1, Confirmed) %>%
-    arrange(desc(Confirmed)) %>%
-    ungroup() %>%
-    slice(1:n) %>%
-    pull(Country.Region)
-}
-
 df_reactive100 <- reactive({
-  df100 %>%
-    filter(Country.Region %in% !!input$countries100)
+  if (!!input$plotType100 == "Confirmed")
+  {
+df %>%
+  filter(Country.Region %in% !!input$countries100) %>%
+  group_by(Country.Region, Date) %>%
+  summarize(Confirmed = sum(Confirmed)) %>%
+  filter(Confirmed > !!input$slider100) %>%
+  group_by(Country.Region) %>%
+  summarize(jour100 = Date[which.min(Confirmed > !!input$slider100)]) %>%
+  inner_join(df) %>%
+  filter(Date > jour100) %>%
+  arrange(Date) %>%
+  group_by(Country.Region, Date) %>%
+  summarize(Confirmed = sum(Confirmed)) %>%
+  group_by(Country.Region) %>%
+  mutate(Day = row_number())
+  }
+  else if (!!input$plotType100 == "Deaths")
+  {
+df %>%
+  filter(Country.Region %in% !!input$countries100) %>%
+  group_by(Country.Region, Date) %>%
+  summarize(Deaths = sum(Deaths)) %>%
+  filter(Deaths > !!input$slider100) %>%
+  group_by(Country.Region) %>%
+  summarize(jour100 = Date[which.min(Deaths > !!input$slider100)]) %>%
+  inner_join(df) %>%
+  filter(Date > jour100) %>%
+  arrange(Date) %>%
+  group_by(Country.Region, Date) %>%
+  summarize(Deaths = sum(Deaths)) %>%
+  group_by(Country.Region) %>%
+  mutate(Day = row_number())
+  }
 })
 
 df_jour_reactive <- reactive({
@@ -70,13 +92,13 @@ plot100 <- reactive({
   if (input$plotType100 == "Deaths") {
     ggplotly(ggplot(d, aes(Day, Deaths, color = Country.Region)) +
                geom_point() + geom_line()
-             + labs(x="Days since 100 cases"),
+             + labs(x=paste("Days since ", input$slider100, " deceased cases", sep="")),
              height = 600)
   }
   else if (input$plotType100 == "Confirmed") {
     ggplotly(ggplot(d, aes(Day, Confirmed, color = Country.Region)) +
                geom_point() + geom_line()
-             + labs(x="Days since 100 cases"),
+             + labs(x=paste("Days since ", input$slider100, " confirmed cases", sep="")),
              height = 600)
   }
 })

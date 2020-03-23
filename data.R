@@ -75,11 +75,11 @@ df <- df %>%
 
 rm(df_c, df_d, df_r)
 
-df_a <- df %>%
-  group_by(Country.Formatted, Country.Region, Date) %>%
-  summarize(Active.Cases = sum(Active.Cases)) %>%
-  arrange(desc(Active.Cases)) %>%
-  ungroup()
+# df_a <- df %>%
+#   group_by(Country.Formatted, Country.Region, Date) %>%
+#   summarize(Active.Cases = sum(Active.Cases)) %>%
+#   arrange(desc(Active.Cases)) %>%
+#   ungroup()
 
 countries <- unique(
   df %>%
@@ -106,12 +106,12 @@ df100 <- df %>%
   group_by(Country.Region) %>%
   mutate(Day = row_number())
 
-df100 %>%
-  ggplot(aes(Day, Deaths, color=Country.Region)) + geom_point() + geom_line() +
-  guides(color=FALSE)
-
 countries100 <- unique(
   df100 %>%
     arrange(desc(Deaths)) %>%
     pull(Country.Region)
 )
+
+most_affected_countries100 <- function(n) {
+  countries100[1:n]
+}

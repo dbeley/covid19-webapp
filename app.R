@@ -59,59 +59,62 @@ ui <- fluidPage(
                     selected = 'Confirmed'
                 )
             ),
+            column(3, uiOutput("sliderinput100")),
             column(3,
-                   uiOutput("countryPicker100"))),
-            plotlyOutput("plot100")
+                   uiOutput("countryPicker100"))
         ),
-        tabPanel(
-            "Table",
-            fluidRow(column(
-                6,
-                selectInput("inputdate", "Choose a date:",
-                            choices = dates)
-            ),
+        plotlyOutput("plot100")
+    ),
+    tabPanel(
+        "Table",
+        fluidRow(column(
+            6,
+            selectInput("inputdate", "Choose a date:",
+                        choices = dates)
+        ),
+        column(6,
+               uiOutput("countryPicker2"))),
+        fluidRow(
             column(6,
-                   uiOutput("countryPicker2"))),
-            fluidRow(
-                column(6,
-                       DT::dataTableOutput("df_jour")),
-                column(6,
-                       DT::dataTableOutput("df_pays"))
-            )
-        ),
-        tabPanel("Map",
-                 div(
-                     class = "outer",
-                     leafletOutput("plotmap", height = "75vh"),
-                     absolutePanel(
-                         top = 40,
-                         right = 10,
-                         width = 300,
-                         draggable = TRUE,
-                         style = " opacity: 0.95",
-                         wellPanel(
-                             selectInput(
-                                 "mapType",
-                                 label = "Graph type",
-                                 choices = list(
-                                     "Active Cases" = 'Active.Cases',
-                                     "Deaths" = 'Deaths',
-                                     "Recovered" = 'Recovered',
-                                     "Confirmed" = "Confirmed"
-                                 ),
-                                 selected = 'Active.Cases'
+                   DT::dataTableOutput("df_jour")),
+            column(6,
+                   DT::dataTableOutput("df_pays"))
+        )
+    ),
+    tabPanel("Map",
+             div(
+                 class = "outer",
+                 leafletOutput("plotmap", height = "75vh"),
+                 absolutePanel(
+                     top = 40,
+                     right = 10,
+                     width = 300,
+                     draggable = TRUE,
+                     style = " opacity: 0.95",
+                     wellPanel(
+                         selectInput(
+                             "mapType",
+                             label = "Graph type",
+                             choices = list(
+                                 "Active Cases" = 'Active.Cases',
+                                 "Deaths" = 'Deaths',
+                                 "Recovered" = 'Recovered',
+                                 "Confirmed" = "Confirmed"
                              ),
-                             sliderInput(
-                                 "mapinputdate",
-                                 label = "Date",
-                                 min = min(dates),
-                                 max = max(dates),
-                                 value = max(dates),
-                                 animate = TRUE
-                             )
+                             selected = 'Active.Cases'
+                         ),
+                         sliderInput(
+                             "mapinputdate",
+                             label = "Date",
+                             min = min(dates),
+                             max = max(dates),
+                             value = max(dates),
+                             animate = TRUE
                          )
                      )
-                 ))
+                 )
+             )
+        )
     )
 )
 
@@ -160,6 +163,16 @@ server <- function(input, output) {
             ),
             multiple = TRUE,
             selected = most_affected_countries100(10)
+        )
+    })
+    output$sliderinput100 <- renderUI({
+        sliderInput(
+            "slider100",
+            label = paste("Number of ", input$plotType100, sep =
+                              ""),
+            min = 0,
+            max = 1000,
+            value = 100
         )
     })
     output$countryPicker2 <- renderUI({
