@@ -46,6 +46,32 @@ ui <- fluidPage(
             plotlyOutput("plot1")
         ),
         tabPanel(
+            "Plot New Cases",
+            fluidRow(
+                column(
+                    3,
+                    # offset = '0.2',
+                    # align = 'center',
+                    selectInput(
+                        "plotTypeNewCases",
+                        label = "Graph type",
+                        choices = list(
+                            "Active Cases" = 'Active.Cases',
+                            "Deaths" = 'Deaths',
+                            "Recovered" = 'Recovered',
+                            "Confirmed" = "Confirmed"
+                        ),
+                        selected = 'Active.Cases'
+                    )
+                ),
+                column(3,
+                       uiOutput("dateInputNewCases")),
+                column(3,
+                       uiOutput("countryPickerNewCases"))
+            ),
+            plotlyOutput("plotNewCases")
+        ),
+        tabPanel(
             "Plot since 100 cases",
             fluidRow(column(
                 3,
@@ -124,6 +150,9 @@ server <- function(input, output) {
     output$plot1 <- renderPlotly({
         plot1()
     })
+    output$plotNewCases <- renderPlotly({
+        plotNewCases()
+    })
     output$plot100 <- renderPlotly({
         plot100()
     })
@@ -137,6 +166,20 @@ server <- function(input, output) {
         plotmap()
     })
 
+    output$countryPickerNewCases <- renderUI({
+        pickerInput(
+            inputId = "countriesNewCases",
+            label = "Select countries",
+            choices = countries,
+            options = list(
+                `actions-box` = TRUE,
+                `live-search` = TRUE,
+                size = 20
+            ),
+            multiple = FALSE,
+            selected = most_affected_countries(1)
+        )
+    })
     output$countryPicker <- renderUI({
         pickerInput(
             inputId = "countries",
@@ -185,7 +228,7 @@ server <- function(input, output) {
                 `live-search` = TRUE,
                 size = 20
             ),
-            multiple = TRUE,
+            multiple = FALSE,
             selected = most_affected_countries(1)
         )
     })
@@ -193,6 +236,20 @@ server <- function(input, output) {
     output$dateInput <- renderUI({
         dateRangeInput(
             'dateRange',
+            label = 'Choose a time range',
+            start = Sys.Date() - weeks(4),
+            end = Sys.Date(),
+            min = "2020-01-01",
+            max = Sys.Date(),
+            format = "dd/mm/yyyy",
+            startview = 'week',
+            language = 'fr',
+            weekstart = 1
+        )
+    })
+    output$dateInputNewCases <- renderUI({
+        dateRangeInput(
+            'dateRangeNewCases',
             label = 'Choose a time range',
             start = Sys.Date() - weeks(4),
             end = Sys.Date(),
