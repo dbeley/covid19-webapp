@@ -134,23 +134,23 @@ plotNewCases <- reactive({
     ggplotly(
       ggplot(d,
              aes(Date, Diff.Active.Cases, fill = Country.Region)) +
-        geom_col() + labs(y = "Active Cases", fill = "Country"),
+        geom_col(position="dodge") + labs(y = "Active Cases", fill = "Country"),
       height = 600
     )
   }
   else if (input$plotTypeNewCases == "Deaths") {
     ggplotly(ggplot(d, aes(Date, Diff.Deaths, fill = Country.Region)) +
-               geom_col(),
+               geom_col(position="dodge"),
              height = 600)
   }
   else if (input$plotTypeNewCases == "Recovered") {
     ggplotly(ggplot(d, aes(Date, Diff.Recovered, fill = Country.Region)) +
-               geom_col(),
+               geom_col(position="dodge"),
              height = 600)
   }
   else if (input$plotTypeNewCases == "Confirmed") {
     ggplotly(ggplot(d, aes(Date, Diff.Confirmed, fill = Country.Region)) +
-               geom_col(),
+               geom_col(position="dodge"),
              height = 600)
   }
 })

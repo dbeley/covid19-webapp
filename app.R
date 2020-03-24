@@ -176,7 +176,7 @@ server <- function(input, output) {
                 `live-search` = TRUE,
                 size = 20
             ),
-            multiple = FALSE,
+            multiple = T,
             selected = most_affected_countries(1)
         )
     })

@@ -11,18 +11,19 @@ usePackageGithub <- function(p, auteur) {
 }
 
 # Chargement des librairies ----
-usePackage("tidyverse")
 usePackage("devtools")
+usePackage("tidyverse")
+devtools::install_version("ggplot2", version = "3.2.1", repos = "http://cran.us.r-project.org")
 usePackage("lubridate")
 usePackage("dplyr")
 usePackage("viridis")
-usePackage("scales")
+# usePackage("scales")
 usePackage("RCurl")
 usePackage("plotly")
-usePackage("rworldmap")
+# usePackage("rworldmap")
 usePackage("leaflet")
 usePackage("htmltools")
-usePackage("shinydashboard")
+# usePackage("shinydashboard")
 
 # Options globales ----
 theme_set(theme_minimal() + theme(text = element_text(size = 16)))
