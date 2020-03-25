@@ -8,6 +8,10 @@
 #
 
 source("dependencies.R")
+library("tidyverse")
+library("lubridate")
+library("RCurl")
+library("leaflet")
 library("shiny")
 library("shinyWidgets")
 library("shinythemes")
