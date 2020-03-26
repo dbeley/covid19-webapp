@@ -28,7 +28,8 @@ df_d <- read.csv(
 )
 df_r <- read.csv(
   text = getURL(
-    "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv"
+    # "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv"
+    "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
   ),
   stringsAsFactors = FALSE
 )
@@ -57,10 +58,20 @@ df_r <-
     values_to = "Recovered"
   )
 
+df_c <- df_c %>%
+  mutate(
+    Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"))
+df_d <- df_d %>%
+  mutate(
+    Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"))
+df_r <- df_r %>%
+  mutate(
+    Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"))
+
 df <- df_c %>% inner_join(df_d) %>% inner_join(df_r)
 df <- df %>%
   mutate(
-    Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"),
+    # Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"),
     Active.Cases = Confirmed - (Deaths + Recovered),
     Country.Formatted =
            ifelse(
@@ -117,3 +128,4 @@ countries100 <- unique(
 most_affected_countries100 <- function(n) {
   countries100[1:n]
 }
+
