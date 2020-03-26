@@ -3,3 +3,5 @@
 .RData
 .Ruserdata
 tags
+shiny_logs
+.env

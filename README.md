@@ -28,3 +28,12 @@ In rstudio, run the following code :
 library('shiny')
 runGitHub('covid19-webapp', 'dbeley')
 ```
+
+## .env file
+
+To use the provided docker-compose file with traefik, you will need an .env file with this content.
+
+```
+DEFAULT_NETWORK=traefik-netowrk
+DOMAIN=localhost
+```

@@ -16,7 +16,17 @@ services:
     # Uncomment the lines below to disable application logs STDOUT output
     # environment:
     #   - APPLICATION_LOGS_TO_STDOUT=false
-    ports:
-      - '3838:3838'
+    # ports:
+    #   - '3838:3838'
     volumes:
       - ./shiny_logs:/var/log/shiny-server
+    labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.covidtracker.entrypoints=insecure"
+        - "traefik.http.routers.covidtracker.rule=Host(`covidtracker.$DOMAIN`)"
+        - "traefik.http.services.covidtracker.loadbalancer.server.port=3838"
+
+networks:
+    default:
+        external:
+            name: $DEFAULT_NETWORK
