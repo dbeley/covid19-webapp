@@ -20,37 +20,37 @@ df_reactive <- reactive({
 df_reactive100 <- reactive({
   if (!!input$plotType100 == "Confirmed")
   {
-df %>%
-  filter(Country.Region %in% !!input$countries100) %>%
-  group_by(Country.Region, Date) %>%
-  summarize(Confirmed = sum(Confirmed)) %>%
-  filter(Confirmed > !!input$slider100) %>%
-  group_by(Country.Region) %>%
-  summarize(jour100 = Date[which.min(Confirmed > !!input$slider100)]) %>%
-  inner_join(df) %>%
-  filter(Date > jour100) %>%
-  arrange(Date) %>%
-  group_by(Country.Region, Date) %>%
-  summarize(Confirmed = sum(Confirmed)) %>%
-  group_by(Country.Region) %>%
-  mutate(Day = row_number())
+    df %>%
+      filter(Country.Region %in% !!input$countries100) %>%
+      group_by(Country.Region, Date) %>%
+      summarize(Confirmed = sum(Confirmed)) %>%
+      filter(Confirmed > !!input$slider100) %>%
+      group_by(Country.Region) %>%
+      summarize(jour100 = Date[which.min(Confirmed > !!input$slider100)]) %>%
+      inner_join(df) %>%
+      filter(Date > jour100) %>%
+      arrange(Date) %>%
+      group_by(Country.Region, Date) %>%
+      summarize(Confirmed = sum(Confirmed)) %>%
+      group_by(Country.Region) %>%
+      mutate(Day = row_number())
   }
   else if (!!input$plotType100 == "Deaths")
   {
-df %>%
-  filter(Country.Region %in% !!input$countries100) %>%
-  group_by(Country.Region, Date) %>%
-  summarize(Deaths = sum(Deaths)) %>%
-  filter(Deaths > !!input$slider100) %>%
-  group_by(Country.Region) %>%
-  summarize(jour100 = Date[which.min(Deaths > !!input$slider100)]) %>%
-  inner_join(df) %>%
-  filter(Date > jour100) %>%
-  arrange(Date) %>%
-  group_by(Country.Region, Date) %>%
-  summarize(Deaths = sum(Deaths)) %>%
-  group_by(Country.Region) %>%
-  mutate(Day = row_number())
+    df %>%
+      filter(Country.Region %in% !!input$countries100) %>%
+      group_by(Country.Region, Date) %>%
+      summarize(Deaths = sum(Deaths)) %>%
+      filter(Deaths > !!input$slider100) %>%
+      group_by(Country.Region) %>%
+      summarize(jour100 = Date[which.min(Deaths > !!input$slider100)]) %>%
+      inner_join(df) %>%
+      filter(Date > jour100) %>%
+      arrange(Date) %>%
+      group_by(Country.Region, Date) %>%
+      summarize(Deaths = sum(Deaths)) %>%
+      group_by(Country.Region) %>%
+      mutate(Day = row_number())
   }
 })
 
@@ -64,7 +64,12 @@ df_jour_reactive <- reactive({
 df_pays_reactive <- reactive({
   df_reactive() %>%
     filter(Country.Region == !!input$countries2) %>%
-    select(Country.Region, Date, Active.Cases, Confirmed, Deaths, Recovered) %>%
+    select(Country.Region,
+           Date,
+           Active.Cases,
+           Confirmed,
+           Deaths,
+           Recovered) %>%
     arrange(desc(Date))
 })
 
@@ -73,16 +78,26 @@ plot100 <- reactive({
   if (nrow(d) == 0)
     return(NULL)
   if (input$plotType100 == "Deaths") {
-    ggplotly(ggplot(d, aes(Day, Deaths, color = Country.Region)) +
-               geom_point() + geom_line()
-             + labs(x=paste("Days since ", input$slider100, " deceased cases", color="Country", sep="")),
-             height = 600)
+    ggplotly(
+      ggplot(d, aes(Day, Deaths, color = Country.Region)) +
+        geom_point() + geom_line()
+      + labs(
+        x = paste("Days since ", input$slider100, " deceased cases", sep = ""),
+        color = "Country"
+      ),
+      height = 600
+    )
   }
   else if (input$plotType100 == "Confirmed") {
-    ggplotly(ggplot(d, aes(Day, Confirmed, color = Country.Region)) +
-               geom_point() + geom_line()
-             + labs(x=paste("Days since ", input$slider100, " confirmed cases", color="Country", sep="")),
-             height = 600)
+    ggplotly(
+      ggplot(d, aes(Day, Confirmed, color = Country.Region)) +
+        geom_point() + geom_line()
+      + labs(
+        x = paste("Days since ", input$slider100, " confirmed cases", sep = ""),
+        color = "Country"
+      ),
+      height = 600
+    )
   }
 })
 
@@ -104,29 +119,31 @@ plot1 <- reactive({
   else if (input$plotType == "Deaths") {
     ggplotly(ggplot(d, aes(Date, Deaths, color = Country.Region)) +
                geom_point() + geom_line() +
-               labs(color="Country"),
+               labs(color = "Country"),
              height = 600)
   }
   else if (input$plotType == "Recovered") {
     ggplotly(ggplot(d, aes(Date, Recovered, color = Country.Region)) +
                geom_point() + geom_line() +
-               labs(color="Country"),
+               labs(color = "Country"),
              height = 600)
   }
   else if (input$plotType == "Confirmed") {
     ggplotly(ggplot(d, aes(Date, Confirmed, color = Country.Region)) +
                geom_point() + geom_line() +
-               labs(color="Country"),
+               labs(color = "Country"),
              height = 600)
   }
 })
 
 plotNewCases <- reactive({
   d <- df_reactive() %>%
-    mutate(Diff.Confirmed = Confirmed - lag(Confirmed),
-           Diff.Active.Cases = Active.Cases - lag(Active.Cases),
-           Diff.Deaths = Deaths - lag(Deaths),
-           Diff.Recovered = Recovered - lag(Recovered)) %>%
+    mutate(
+      Diff.Confirmed = Confirmed - lag(Confirmed),
+      Diff.Active.Cases = Active.Cases - lag(Active.Cases),
+      Diff.Deaths = Deaths - lag(Deaths),
+      Diff.Recovered = Recovered - lag(Recovered)
+    ) %>%
     filter(Date > !!input$dateRangeNewCases[1] &
              Date <= !!(input$dateRangeNewCases[2] + 1)) %>%
     filter(Country.Region %in% !!input$countriesNewCases)
@@ -135,30 +152,51 @@ plotNewCases <- reactive({
     return(NULL)
   if (input$plotTypeNewCases == "Active.Cases") {
     ggplotly(
-      ggplot(d,
-             aes(Date, Diff.Active.Cases, fill = Country.Region, label = Diff.Active.Cases)) +
-        geom_col(position="dodge") + labs(y="Active Cases", fill="Country") +
-        geom_text(position = position_stack(vjust=0.1), check_overlap=T),
+      ggplot(
+        d,
+        aes(
+          Date,
+          Diff.Active.Cases,
+          fill = Country.Region,
+          label = Diff.Active.Cases
+        )
+      ) +
+        geom_col(position = "dodge") + labs(y = "Active Cases", fill = "Country"),
       height = 600
     )
   }
   else if (input$plotTypeNewCases == "Deaths") {
-    ggplotly(ggplot(d, aes(Date, Diff.Deaths, fill = Country.Region, label = Diff.Deaths)) +
-               geom_col(position="dodge") + labs(y="Deaths", fill="Country") +
-               geom_text(position = position_stack(vjust=0.1), check_overlap=T),
-             height = 600)
+    ggplotly(
+      ggplot(
+        d,
+        aes(Date, Diff.Deaths, fill = Country.Region, label = Diff.Deaths)
+      ) +
+        geom_col(position = "dodge") + labs(y = "Deaths", fill =
+                                              "Country"),
+      height = 600
+    )
   }
   else if (input$plotTypeNewCases == "Recovered") {
-    ggplotly(ggplot(d, aes(Date, Diff.Recovered, fill = Country.Region, label = Diff.Recovered)) +
-               geom_col(position="dodge") + labs(y="Recovered", fill="Country") +
-               geom_text(position = position_stack(vjust=0.1), check_overlap=T),
-             height = 600)
+    ggplotly(
+      ggplot(
+        d,
+        aes(Date, Diff.Recovered, fill = Country.Region, label = Diff.Recovered)
+      ) +
+        geom_col(position = "dodge") + labs(y = "Recovered", fill =
+                                              "Country"),
+      height = 600
+    )
   }
   else if (input$plotTypeNewCases == "Confirmed") {
-    ggplotly(ggplot(d, aes(Date, Diff.Confirmed, fill = Country.Region, label = Diff.Confirmed)) +
-               geom_col(position="dodge") + labs(y="Confirmed", fill="Country") +
-               geom_text(position = position_stack(vjust=0.1), check_overlap=T),
-             height = 600)
+    ggplotly(
+      ggplot(
+        d,
+        aes(Date, Diff.Confirmed, fill = Country.Region, label = Diff.Confirmed)
+      ) +
+        geom_col(position = "dodge") + labs(y = "Confirmed", fill =
+                                              "Country"),
+      height = 600
+    )
   }
 })
 

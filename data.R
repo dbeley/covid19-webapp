@@ -56,14 +56,11 @@ df_r <-
   )
 
 df_c <- df_c %>%
-  mutate(
-    Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"))
+  mutate(Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"))
 df_d <- df_d %>%
-  mutate(
-    Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"))
+  mutate(Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"))
 df_r <- df_r %>%
-  mutate(
-    Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"))
+  mutate(Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"))
 
 df <- df_c %>% inner_join(df_d) %>% inner_join(df_r)
 df <- df %>%
@@ -71,15 +68,15 @@ df <- df %>%
     # Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"),
     Active.Cases = Confirmed - (Deaths + Recovered),
     Country.Formatted =
-           ifelse(
-             Province.State == "",
-             Country.Region,
-             ifelse(
-               Province.State == Country.Region,
-               Country.Region,
-               paste(Country.Region, " (", Province.State, ")", sep="")
-             )
-           )
+      ifelse(
+        Province.State == "",
+        Country.Region,
+        ifelse(
+          Province.State == Country.Region,
+          Country.Region,
+          paste(Country.Region, " (", Province.State, ")", sep = "")
+        )
+      )
   ) %>%
   arrange(desc(Date))
 
@@ -116,11 +113,9 @@ df100 <- df %>%
   group_by(Country.Region) %>%
   mutate(Day = row_number())
 
-countries100 <- unique(
-  df100 %>%
-    arrange(desc(Deaths)) %>%
-    pull(Country.Region)
-)
+countries100 <- unique(df100 %>%
+                         arrange(desc(Deaths)) %>%
+                         pull(Country.Region))
 
 most_affected_countries100 <- function(n) {
   countries100[1:n]

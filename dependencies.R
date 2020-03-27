@@ -1,4 +1,8 @@
-dir.create(path = Sys.getenv("R_LIBS_USER"), showWarnings = FALSE, recursive = TRUE)
+dir.create(
+  path = Sys.getenv("R_LIBS_USER"),
+  showWarnings = FALSE,
+  recursive = TRUE
+)
 
 usePackage <- function(p) {
   if (!is.element(p, installed.packages()[, 1]))

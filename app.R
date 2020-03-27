@@ -17,7 +17,7 @@ library("shinyWidgets")
 library("shinythemes")
 library("plotly")
 
-theme_set(theme_minimal() + theme(text = element_text(size=16)))
+theme_set(theme_minimal() + theme(text = element_text(size = 16)))
 
 source("data.R")
 
@@ -44,7 +44,8 @@ ui <- fluidPage(
                             "Confirmed" = "Confirmed"
                         ),
                         selected = 'Active.Cases'
-                    )),
+                    )
+                ),
                 column(2,
                        uiOutput("dateInput"))
             ),
@@ -87,7 +88,7 @@ ui <- fluidPage(
                         "plotType100",
                         label = "Graph type",
                         choices = list("Deaths" = 'Deaths',
-                                      "Confirmed" = "Confirmed"),
+                                       "Confirmed" = "Confirmed"),
                         selected = 'Deaths'
                     )
                 ),
@@ -218,7 +219,7 @@ server <- function(input, output) {
     output$sliderinput100 <- renderUI({
         sliderInput(
             "slider100",
-            label = paste("Number of ", input$plotType100, sep =
+            label = paste("Number of ", str_to_lower(input$plotType100), sep =
                               ""),
             min = 0,
             max = 1000,
