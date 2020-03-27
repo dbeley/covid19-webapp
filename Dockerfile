@@ -20,7 +20,7 @@ RUN R -e "install.packages('shiny', repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('lubridate', repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('shinythemes', repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('shinyWidgets', repos='http://cran.rstudio.com/')"
-RUN R -e "install.packages('leaflet', repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('leaflet')"
 RUN R -e "install.packages('RCurl', repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('plotly', repos='http://cran.rstudio.com/')"
 

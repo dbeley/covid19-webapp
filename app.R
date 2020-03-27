@@ -7,7 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 
-source("dependencies.R")
+# source("dependencies.R")
 library("tidyverse")
 library("lubridate")
 library("RCurl")
@@ -16,6 +16,9 @@ library("shiny")
 library("shinyWidgets")
 library("shinythemes")
 library("plotly")
+
+theme_set(theme_minimal() + theme(text = element_text(size=16)))
+
 source("data.R")
 
 # Define UI for application that draws a histogram
