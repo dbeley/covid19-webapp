@@ -24,12 +24,12 @@ ui <- fluidPage(
     navbarPage(
         "Covid-tracker",
         tabPanel(
-            "Plot",
+            "Total",
             fluidRow(
+                column(2,
+                       uiOutput("countryPicker")),
                 column(
-                    3,
-                    # offset = '0.2',
-                    # align = 'center',
+                    2,
                     selectInput(
                         "plotType",
                         label = "Graph type",
@@ -42,20 +42,18 @@ ui <- fluidPage(
                         selected = 'Active.Cases'
                     )
                 ),
-                column(3,
-                       uiOutput("dateInput")),
-                column(3,
-                       uiOutput("countryPicker"))
+                column(2,
+                       uiOutput("dateInput"))
             ),
             plotlyOutput("plot1")
         ),
         tabPanel(
-            "Plot New Cases",
+            "New Cases",
             fluidRow(
+                column(2,
+                       uiOutput("countryPickerNewCases")),
                 column(
-                    3,
-                    # offset = '0.2',
-                    # align = 'center',
+                    2,
                     selectInput(
                         "plotTypeNewCases",
                         label = "Graph type",
@@ -68,82 +66,78 @@ ui <- fluidPage(
                         selected = 'Active.Cases'
                     )
                 ),
-                column(3,
-                       uiOutput("dateInputNewCases")),
-                column(3,
-                       uiOutput("countryPickerNewCases"))
+                column(2,
+                       uiOutput("dateInputNewCases"))
             ),
             plotlyOutput("plotNewCases")
         ),
         tabPanel(
-            "Plot since 100 cases",
-            fluidRow(column(
-                3,
-                # offset = '0.2',
-                # align = 'center',
-                selectInput(
-                    "plotType100",
-                    label = "Graph type",
-                    choices = list("Confirmed" = "Confirmed",
-                                   "Deaths" = 'Deaths'),
-                    selected = 'Confirmed'
-                )
+            "Comparison",
+            fluidRow(
+                column(2,
+                       uiOutput("countryPicker100")),
+                column(
+                    2,
+                    selectInput(
+                        "plotType100",
+                        label = "Graph type",
+                        choices = list("Confirmed" = "Confirmed",
+                                       "Deaths" = 'Deaths'),
+                        selected = 'Confirmed'
+                    )
+                ),
+                column(2, uiOutput("sliderinput100"))
             ),
-            column(3, uiOutput("sliderinput100")),
-            column(3,
-                   uiOutput("countryPicker100"))
+            plotlyOutput("plot100")
         ),
-        plotlyOutput("plot100")
-    ),
-    tabPanel(
-        "Table",
-        fluidRow(column(
-            6,
-            selectInput("inputdate", "Choose a date:",
-                        choices = dates)
-        ),
-        column(6,
-               uiOutput("countryPicker2"))),
-        fluidRow(
-            column(6,
-                   DT::dataTableOutput("df_jour")),
-            column(6,
-                   DT::dataTableOutput("df_pays"))
-        )
-    ),
-    tabPanel("Map",
-             div(
-                 class = "outer",
-                 leafletOutput("plotmap", height = "75vh"),
-                 absolutePanel(
-                     top = 40,
-                     right = 10,
-                     width = 300,
-                     draggable = TRUE,
-                     style = " opacity: 0.95",
-                     wellPanel(
-                         selectInput(
-                             "mapType",
-                             label = "Graph type",
-                             choices = list(
-                                 "Active Cases" = 'Active.Cases',
-                                 "Deaths" = 'Deaths',
-                                 "Recovered" = 'Recovered',
-                                 "Confirmed" = "Confirmed"
+        tabPanel("Map",
+                 div(
+                     class = "outer",
+                     leafletOutput("plotmap", height = "75vh"),
+                     absolutePanel(
+                         top = 40,
+                         right = 10,
+                         width = 300,
+                         draggable = TRUE,
+                         style = " opacity: 0.95",
+                         wellPanel(
+                             selectInput(
+                                 "mapType",
+                                 label = "Graph type",
+                                 choices = list(
+                                     "Active Cases" = 'Active.Cases',
+                                     "Deaths" = 'Deaths',
+                                     "Recovered" = 'Recovered',
+                                     "Confirmed" = "Confirmed"
+                                 ),
+                                 selected = 'Active.Cases'
                              ),
-                             selected = 'Active.Cases'
-                         ),
-                         sliderInput(
-                             "mapinputdate",
-                             label = "Date",
-                             min = min(dates),
-                             max = max(dates),
-                             value = max(dates),
-                             animate = TRUE
+                             sliderInput(
+                                 "mapinputdate",
+                                 label = "Date",
+                                 min = min(dates),
+                                 max = max(dates),
+                                 value = max(dates),
+                                 animate = TRUE
+                             )
                          )
                      )
-                 )
-             )
+                 )),
+        tabPanel(
+            "Explore Data",
+            fluidRow(column(
+                6,
+                selectInput("inputdate", "Choose a date:",
+                            choices = dates)
+            ),
+            column(6,
+                   uiOutput("countryPicker2"))),
+            fluidRow(
+                column(6,
+                       DT::dataTableOutput("df_jour")),
+                column(6,
+                       DT::dataTableOutput("df_pays"))
+            )
         )
     )
 )
