@@ -18,14 +18,15 @@ library("shinythemes")
 library("plotly")
 source("data.R")
 
-# Define UI for application that draws a histogram
 ui <- fluidPage(
     theme = shinytheme("flatly"),
     navbarPage(
-        "Covid-tracker",
+        "Covidtracker",
         tabPanel(
             "Total",
             fluidRow(
+                column(3,
+                       h3("Evolution of total cases")),
                 column(2,
                        uiOutput("countryPicker")),
                 column(
@@ -40,16 +41,16 @@ ui <- fluidPage(
                             "Confirmed" = "Confirmed"
                         ),
                         selected = 'Active.Cases'
-                    )
-                ),
+                    )),
                 column(2,
                        uiOutput("dateInput"))
             ),
-            plotlyOutput("plot1")
+            fluidRow(plotlyOutput("plot1"))
         ),
         tabPanel(
             "New Cases",
             fluidRow(
+                column(3, h3("New cases per day")),
                 column(2,
                        uiOutput("countryPickerNewCases")),
                 column(
@@ -69,11 +70,12 @@ ui <- fluidPage(
                 column(2,
                        uiOutput("dateInputNewCases"))
             ),
-            plotlyOutput("plotNewCases")
+            fluidRow(plotlyOutput("plotNewCases"))
         ),
         tabPanel(
             "Comparison",
             fluidRow(
+                column(3, h3("Compare countries evolution")),
                 column(2,
                        uiOutput("countryPicker100")),
                 column(
@@ -81,14 +83,14 @@ ui <- fluidPage(
                     selectInput(
                         "plotType100",
                         label = "Graph type",
-                        choices = list("Confirmed" = "Confirmed",
-                                       "Deaths" = 'Deaths'),
-                        selected = 'Confirmed'
+                        choices = list("Deaths" = 'Deaths',
+                                      "Confirmed" = "Confirmed"),
+                        selected = 'Deaths'
                     )
                 ),
                 column(2, uiOutput("sliderinput100"))
             ),
-            plotlyOutput("plot100")
+            fluidRow(plotlyOutput("plot100"))
         ),
         tabPanel("Map",
                  div(
@@ -125,20 +127,24 @@ ui <- fluidPage(
                  )),
         tabPanel(
             "Explore Data",
-            fluidRow(column(
-                6,
-                selectInput("inputdate", "Choose a date:",
-                            choices = dates)
+            fluidRow(
+                column(3, h3("Data by date")),
+                column(3,
+                       selectInput("inputdate", "Choose a date:",
+                                   choices = dates)),
+                column(3, h3("Data by country")),
+                column(3,
+                       uiOutput("countryPicker2"))
             ),
-            column(6,
-                   uiOutput("countryPicker2"))),
             fluidRow(
                 column(6,
                        DT::dataTableOutput("df_jour")),
                 column(6,
                        DT::dataTableOutput("df_pays"))
             )
-        )
+        ),
+        tabPanel("About",
+                 mainPanel(includeMarkdown("about.md")))
     )
 )
 
