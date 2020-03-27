@@ -57,14 +57,14 @@ df %>%
 df_jour_reactive <- reactive({
   df_reactive() %>%
     filter(Date == !!input$inputdate) %>%
-    select(Country.Region, Confirmed, Deaths, Recovered) %>%
-    arrange(desc(Deaths))
+    select(Country.Region, Active.Cases, Confirmed, Deaths, Recovered) %>%
+    arrange(desc(Active.Cases))
 })
 
 df_pays_reactive <- reactive({
   df_reactive() %>%
     filter(Country.Region == !!input$countries2) %>%
-    select(Country.Region, Date, Confirmed, Deaths, Recovered) %>%
+    select(Country.Region, Date, Active.Cases, Confirmed, Deaths, Recovered) %>%
     arrange(desc(Date))
 })
 
@@ -75,13 +75,13 @@ plot100 <- reactive({
   if (input$plotType100 == "Deaths") {
     ggplotly(ggplot(d, aes(Day, Deaths, color = Country.Region)) +
                geom_point() + geom_line()
-             + labs(x=paste("Days since ", input$slider100, " deceased cases", sep="")),
+             + labs(x=paste("Days since ", input$slider100, " deceased cases", color="Country", sep="")),
              height = 600)
   }
   else if (input$plotType100 == "Confirmed") {
     ggplotly(ggplot(d, aes(Day, Confirmed, color = Country.Region)) +
                geom_point() + geom_line()
-             + labs(x=paste("Days since ", input$slider100, " confirmed cases", sep="")),
+             + labs(x=paste("Days since ", input$slider100, " confirmed cases", color="Country", sep="")),
              height = 600)
   }
 })
@@ -103,17 +103,20 @@ plot1 <- reactive({
   }
   else if (input$plotType == "Deaths") {
     ggplotly(ggplot(d, aes(Date, Deaths, color = Country.Region)) +
-               geom_point() + geom_line(),
+               geom_point() + geom_line() +
+               labs(color="Country"),
              height = 600)
   }
   else if (input$plotType == "Recovered") {
     ggplotly(ggplot(d, aes(Date, Recovered, color = Country.Region)) +
-               geom_point() + geom_line(),
+               geom_point() + geom_line() +
+               labs(color="Country"),
              height = 600)
   }
   else if (input$plotType == "Confirmed") {
     ggplotly(ggplot(d, aes(Date, Confirmed, color = Country.Region)) +
-               geom_point() + geom_line(),
+               geom_point() + geom_line() +
+               labs(color="Country"),
              height = 600)
   }
 })
@@ -133,24 +136,28 @@ plotNewCases <- reactive({
   if (input$plotTypeNewCases == "Active.Cases") {
     ggplotly(
       ggplot(d,
-             aes(Date, Diff.Active.Cases, fill = Country.Region)) +
-        geom_col(position="dodge") + labs(y = "Active Cases", fill = "Country"),
+             aes(Date, Diff.Active.Cases, fill = Country.Region, label = Diff.Active.Cases)) +
+        geom_col(position="dodge") + labs(y="Active Cases", fill="Country") +
+        geom_text(position = position_stack(vjust=0.1), check_overlap=T),
       height = 600
     )
   }
   else if (input$plotTypeNewCases == "Deaths") {
-    ggplotly(ggplot(d, aes(Date, Diff.Deaths, fill = Country.Region)) +
-               geom_col(position="dodge"),
+    ggplotly(ggplot(d, aes(Date, Diff.Deaths, fill = Country.Region, label = Diff.Deaths)) +
+               geom_col(position="dodge") + labs(y="Deaths", fill="Country") +
+               geom_text(position = position_stack(vjust=0.1), check_overlap=T),
              height = 600)
   }
   else if (input$plotTypeNewCases == "Recovered") {
-    ggplotly(ggplot(d, aes(Date, Diff.Recovered, fill = Country.Region)) +
-               geom_col(position="dodge"),
+    ggplotly(ggplot(d, aes(Date, Diff.Recovered, fill = Country.Region, label = Diff.Recovered)) +
+               geom_col(position="dodge") + labs(y="Recovered", fill="Country") +
+               geom_text(position = position_stack(vjust=0.1), check_overlap=T),
              height = 600)
   }
   else if (input$plotTypeNewCases == "Confirmed") {
-    ggplotly(ggplot(d, aes(Date, Diff.Confirmed, fill = Country.Region)) +
-               geom_col(position="dodge"),
+    ggplotly(ggplot(d, aes(Date, Diff.Confirmed, fill = Country.Region, label = Diff.Confirmed)) +
+               geom_col(position="dodge") + labs(y="Confirmed", fill="Country") +
+               geom_text(position = position_stack(vjust=0.1), check_overlap=T),
              height = 600)
   }
 })

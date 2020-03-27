@@ -1,4 +1,4 @@
-# covid-19-webapp
+# Covidtracker
 
 ## Gallery
 
