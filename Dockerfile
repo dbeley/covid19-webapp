@@ -30,6 +30,7 @@ COPY app.R /srv/shiny-server/
 COPY data.R /srv/shiny-server/
 COPY dependencies.R /srv/shiny-server/
 COPY reactive_components.R /srv/shiny-server/
+COPY about.md /srv/shiny-server/
 
 # select port
 EXPOSE 3838
