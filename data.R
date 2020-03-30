@@ -92,7 +92,7 @@ countries <- unique(
   df %>%
     group_by(Country.Region) %>%
     filter(Date == max(Date)) %>%
-    arrange(desc(Deaths)) %>%
+    arrange(desc(Active.Cases)) %>%
     pull(Country.Region)
 )
 

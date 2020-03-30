@@ -30,8 +30,6 @@ ui <- fluidPage(
             fluidRow(
                 column(3,
                        h3("Evolution of total cases")),
-                column(2,
-                       uiOutput("countryPicker")),
                 column(
                     2,
                     selectInput(
@@ -47,7 +45,9 @@ ui <- fluidPage(
                     )
                 ),
                 column(2,
-                       uiOutput("dateInput"))
+                       uiOutput("dateInput")),
+                column(3,
+                       uiOutput("countryPicker"))
             ),
             fluidRow(plotlyOutput("plot1"))
         ),
@@ -55,8 +55,6 @@ ui <- fluidPage(
             "New Cases",
             fluidRow(
                 column(3, h3("New cases per day")),
-                column(2,
-                       uiOutput("countryPickerNewCases")),
                 column(
                     2,
                     selectInput(
@@ -72,7 +70,9 @@ ui <- fluidPage(
                     )
                 ),
                 column(2,
-                       uiOutput("dateInputNewCases"))
+                       uiOutput("dateInputNewCases")),
+                column(3,
+                       uiOutput("countryPickerNewCases"))
             ),
             fluidRow(plotlyOutput("plotNewCases"))
         ),
@@ -80,8 +80,6 @@ ui <- fluidPage(
             "Comparison",
             fluidRow(
                 column(3, h3("Compare countries evolution")),
-                column(2,
-                       uiOutput("countryPicker100")),
                 column(
                     2,
                     selectInput(
@@ -92,7 +90,9 @@ ui <- fluidPage(
                         selected = 'Deaths'
                     )
                 ),
-                column(2, uiOutput("sliderinput100"))
+                column(2, uiOutput("sliderinput100")),
+                column(3,
+                       uiOutput("countryPicker100"))
             ),
             fluidRow(plotlyOutput("plot100"))
         ),
@@ -131,20 +131,34 @@ ui <- fluidPage(
                  )),
         tabPanel(
             "Explore Data",
-            fluidRow(
-                column(3, h3("Data by date")),
-                column(3,
+            conditionalPanel("input.tableType == 'Country'",
+                column(2, h3("Data by country"))
+                             ),
+            conditionalPanel("input.tableType == 'Date'",
+                column(2, h3("Data by date"))
+                             ),
+            column(
+                1,
+                radioButtons(
+                    "tableType",
+                    label = "Table type",
+                    choices = list("Date" = 'Date',
+                                   "Country" = "Country"),
+                    selected = 'Date'
+                )
+            ),
+            conditionalPanel(
+                "input.tableType == 'Country'",
+                column(4,
+                       uiOutput("countryPicker2")),
+                fluidRow(DT::dataTableOutput("df_pays"))
+            ),
+            conditionalPanel(
+                "input.tableType == 'Date'",
+                column(4,
                        selectInput("inputdate", "Choose a date:",
                                    choices = dates)),
-                column(3, h3("Data by country")),
-                column(3,
-                       uiOutput("countryPicker2"))
-            ),
-            fluidRow(
-                column(6,
-                       DT::dataTableOutput("df_jour")),
-                column(6,
-                       DT::dataTableOutput("df_pays"))
+                fluidRow(DT::dataTableOutput("df_jour"))
             )
         ),
         tabPanel("About",
@@ -165,10 +179,16 @@ server <- function(input, output) {
         plot100()
     })
     output$df_jour <- DT::renderDataTable({
-        DT::datatable(df_jour_reactive(), options = list(pageLength = 15))
+        DT::datatable(df_jour_reactive(),
+                      colnames = c("", "Country", "Active Cases", "Confirmed Cases", "Deaths", "Recovered"),
+                      selection = "none",
+                      options = list(pageLength = 15))
     })
     output$df_pays <- DT::renderDataTable({
-        DT::datatable(df_pays_reactive(), options = list(pageLength = 15))
+        DT::datatable(df_pays_reactive(),
+                      colnames = c("", "Country", "Date", "Active Cases", "Confirmed Cases", "Deaths", "Recovered"),
+                      selection = "none",
+                      options = list(pageLength = 15))
     })
     output$plotmap <- renderLeaflet({
         plotmap()
@@ -177,7 +197,7 @@ server <- function(input, output) {
     output$countryPickerNewCases <- renderUI({
         pickerInput(
             inputId = "countriesNewCases",
-            label = "Select countries",
+            label = "Select countries (sorted by active cases)",
             choices = countries,
             options = list(
                 `actions-box` = TRUE,
@@ -191,7 +211,7 @@ server <- function(input, output) {
     output$countryPicker <- renderUI({
         pickerInput(
             inputId = "countries",
-            label = "Select countries",
+            label = "Select countries (sorted by active cases)",
             choices = countries,
             options = list(
                 `actions-box` = TRUE,
@@ -205,7 +225,7 @@ server <- function(input, output) {
     output$countryPicker100 <- renderUI({
         pickerInput(
             inputId = "countries100",
-            label = "Select countries",
+            label = "Select countries (sorted by active cases)",
             choices = countries100,
             options = list(
                 `actions-box` = TRUE,
@@ -229,7 +249,7 @@ server <- function(input, output) {
     output$countryPicker2 <- renderUI({
         pickerInput(
             inputId = "countries2",
-            label = "Select countries",
+            label = "Select countries (sorted by active cases)",
             choices = countries,
             options = list(
                 `actions-box` = TRUE,
