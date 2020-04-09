@@ -56,13 +56,20 @@ df_r <-
   )
 
 df_c <- df_c %>%
-  mutate(Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"))
+  mutate(Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"),
+         Lat = round(Lat, 2),
+         Long = round(Long, 2))
 df_d <- df_d %>%
-  mutate(Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"))
+  mutate(Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"),
+         Lat = round(Lat, 2),
+         Long = round(Long, 2))
 df_r <- df_r %>%
-  mutate(Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"))
+  mutate(Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"),
+         Lat = round(Lat, 2),
+         Long = round(Long, 2))
 
 df <- df_c %>% inner_join(df_d) %>% inner_join(df_r)
+
 df <- df %>%
   mutate(
     # Date = as.Date(substr(Date, 2, length(Date)), format = "%m.%d.%y"),
