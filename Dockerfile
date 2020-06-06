@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
   
 
 # install R packages required 
-# (change it dependeing on the packages you need)
+# (change it depending on the packages you need)
 RUN R -e "install.packages('tidyverse', repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('shiny', repos='http://cran.rstudio.com/')"
 RUN R -e "install.packages('lubridate', repos='http://cran.rstudio.com/')"
@@ -39,4 +39,4 @@ EXPOSE 3838
 RUN sudo chown -R shiny:shiny /srv/shiny-server
 
 # run app
-CMD ["/usr/bin/shiny-server.sh"]
+CMD ["/usr/bin/shiny-server"]
